@@ -1,0 +1,47 @@
+version: "3.8"
+services:
+  api:
+    # image: thomas-oliver/nestjs-dockerized 
+    build:
+      dockerfile: Dockerfile
+      context: .
+    depends_on: 
+      - postgres
+      - redis
+    environment: 
+      REDIS_URL: redis:6379
+      CHOKIDAR_USEPOLLING: 'true'
+      CHOKIDAR_INTERVAL: 1000
+      DATABASE_URL: postgres://user:password@postgres:5432/db
+      NODE_ENV: development
+      PORT: 3000
+    ports:
+      - "8080:3000"
+    volumes: 
+      - ./:/var/app
+
+  postgres:
+    image: postgres:10.4
+    ports:
+      - "35000:5432"
+    environment: 
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
+
+  redis:
+    image: redis
+    container_name: tutorial_redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - 6379:6379
+
+  redis-commander:
+    container_name: tutorial_redis-commander
+    image: rediscommander/redis-commander
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
