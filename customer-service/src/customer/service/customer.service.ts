@@ -11,7 +11,6 @@ export class CustomerService {
     @InjectRepository(CustomerEntity)
     private customerRepository: Repository<CustomerEntity>,
   ) {}
-
   add(customer: CustomerI): Observable<CustomerI> {
     return from(this.customerRepository.save(customer));
   }
